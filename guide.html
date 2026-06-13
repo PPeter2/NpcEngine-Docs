@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quick Start — NPCEngine</title>
+<title>Quick Start — NpcEngine</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <a href="index.html" class="nav-logo">NpcEngine</a>
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="api.html">API Reference</a>
@@ -43,17 +43,17 @@
     <p class="guide-intro">This guide walks through building a complete working NPC from scratch in under 10 minutes.</p>
 
     <h2 id="install">Installation</h2>
-    <p>Add NPCEngine to your <code>wally.toml</code>:</p>
+    <p>Add NpcEngine to your <code>wally.toml</code>:</p>
     <pre><code>[dependencies]
-NPCEngine = "bs_eryx/npcengine@0.1.0"</code></pre>
-    <p>Run <code>wally install</code> then sync with Rojo. The engine will appear at <code>ReplicatedStorage.Packages.NPCEngine</code>.</p>
+NpcEngine = "bs_eryx/NpcEngine@0.1.0"</code></pre>
+    <p>Run <code>wally install</code> then sync with Rojo. The engine will appear at <code>ReplicatedStorage.Packages.NpcEngine</code>.</p>
 
     <h2 id="first-npc">Your first NPC</h2>
     <p>Place a <code>Model</code> in Workspace. It needs a <code>Humanoid</code> and a <code>HumanoidRootPart</code>. Then in a <code>Script</code> under <code>ServerScriptService</code>:</p>
     <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+local NpcEngine = require(ReplicatedStorage:WaitForChild("NpcEngine"))
 
-local npc = NPCEngine.new({
+local npc = NpcEngine.new({
     Model = workspace.MyNPC,
     MoveSpeed = 16,
     SleepRange = 120,
@@ -61,7 +61,7 @@ local npc = NPCEngine.new({
     <p>That's it. The NPC is now live with all sub-systems initialized.</p>
 
     <h2 id="states">States</h2>
-    <p>NPCEngine uses a Finite State Machine. Register every state before you transition to it:</p>
+    <p>NpcEngine uses a Finite State Machine. Register every state before you transition to it:</p>
     <pre><code>npc:RegisterState("Idle", {
     OnEnter = function()
         print("Entered Idle")
@@ -145,11 +145,11 @@ npc._animController:Tick(npc._fsm._currentState)</code></pre>
 
     <h2 id="presets">Using Presets</h2>
     <p>Skip manual config with built-in archetypes:</p>
-    <pre><code>local Presets = NPCEngine.Presets
+    <pre><code>local Presets = NpcEngine.Presets
 
 -- Use a built-in archetype
 local config = Presets:Apply(Presets:Get("Guard"), workspace.MyNPC)
-local npc = NPCEngine.new(config)
+local npc = NpcEngine.new(config)
 
 -- Apply the preset's perception settings
 local preset = Presets:Get("Guard")
@@ -169,7 +169,7 @@ Presets:HotSwap(npc, "Boss")</code></pre>
 
     <h2 id="bt">Behaviour Trees</h2>
     <p>Replace manual state transitions with a declarative behaviour tree:</p>
-    <pre><code>local BT = NPCEngine.BT
+    <pre><code>local BT = NpcEngine.BT
 
 npc:SetBehaviourTree(
     BT.Selector({
@@ -240,11 +240,11 @@ end</code></pre>
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-logo">NpcEngine</div>
         <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
       </div>
     </div>
-    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NpcEngine</div>
   </div>
 </footer>
 

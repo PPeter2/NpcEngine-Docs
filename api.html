@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>API Reference — NPCEngine</title>
+<title>API Reference — NpcEngine</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <a href="index.html" class="nav-logo">NpcEngine</a>
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="api.html" class="active">API Reference</a>
@@ -134,7 +134,7 @@
 
     <div class="api-header">
       <h1>API Reference</h1>
-      <p>Complete reference for every public method in NPCEngine. All methods are available on the object returned by <code>Engine.new()</code> unless noted otherwise.</p>
+      <p>Complete reference for every public method in NpcEngine. All methods are available on the object returned by <code>Engine.new()</code> unless noted otherwise.</p>
     </div>
       <div class="method-header">
         <div class="method-name">Engine.new()</div>
@@ -142,7 +142,7 @@
       </div>
       <p>Creates and returns a new NPC engine instance. Wires together all sub-systems: FSM, Pathfinder, LODBrain, Blackboard, Perception, AggroTable, ContextSteering, Network, AnimationController, DebugOverlay, Dialogue, BehaviourTree, and UtilityAI.</p>
       <div class="method-sig">
-        <code>NPCEngine.new(config: NPCConfig) → NPCEngineInstance</code>
+        <code>NpcEngine.new(config: NPCConfig) → NpcEngineInstance</code>
       </div>
       <table class="param-table">
         <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
@@ -153,7 +153,7 @@
           <tr><td><code>NetworkId</code></td><td><code>string?</code></td><td>—</td><td>Unique identifier for this NPC's network channel. Auto-generated if omitted.</td></tr>
         </tbody>
       </table>
-      <pre><code class="language-lua">local npc = NPCEngine.new({
+      <pre><code class="language-lua">local npc = NpcEngine.new({
     Model = workspace.MyNPC,
     MoveSpeed = 16,
     SleepRange = 120,
@@ -471,7 +471,7 @@ npc:SetSleeping(false)</code></pre>
       </div>
       <p>Sets the root node of the behaviour tree. The tree is ticked by LODBrain automatically at the NPC's current LOD rate.</p>
       <div class="method-sig"><code>npc:SetBehaviourTree(rootNode: BTNode)</code></div>
-      <pre><code class="language-lua">local BT = NPCEngine.BT
+      <pre><code class="language-lua">local BT = NpcEngine.BT
 
 npc:SetBehaviourTree(
     BT.Selector({
@@ -611,8 +611,8 @@ end)</code></pre>
         <div class="method-tag">Pool</div>
       </div>
       <p>Creates a pre-warmed pool of NPC instances. Allocation is deferred across frames via <code>task.defer</code> to avoid spawn spikes.</p>
-      <div class="method-sig"><code>NPCEngine.Pool.new(config: PoolConfig) → ObjectPool</code></div>
-      <pre><code class="language-lua">local pool = NPCEngine.Pool.new({
+      <div class="method-sig"><code>NpcEngine.Pool.new(config: PoolConfig) → ObjectPool</code></div>
+      <pre><code class="language-lua">local pool = NpcEngine.Pool.new({
     template = workspace.EnemyTemplate,
     poolSize = 20,
     parent = workspace,
@@ -645,7 +645,7 @@ end)</code></pre>
         <div class="method-tag">Pool</div>
       </div>
       <p>Returns an NPC to the pool. Resets health, stops movement, clears blackboard, and moves the model off-world. The entry becomes available for the next <code>SpawnOne</code> or <code>SpawnWave</code> call.</p>
-      <div class="method-sig"><code>pool:Recycle(npc: NPCEngineInstance)</code></div>
+      <div class="method-sig"><code>pool:Recycle(npc: NpcEngineInstance)</code></div>
     </section>
     <div class="api-group-title" id="squad-group">Squad System</div>
 
@@ -655,11 +655,11 @@ end)</code></pre>
         <div class="method-tag">Squad</div>
       </div>
       <p>Creates a squad that manages multiple NPCs with a shared blackboard, formation movement, and group state transitions.</p>
-      <div class="method-sig"><code>NPCEngine.Squad.new(config: SquadConfig, masterJanitor: any) → GroupAI</code></div>
+      <div class="method-sig"><code>NpcEngine.Squad.new(config: SquadConfig, masterJanitor: any) → GroupAI</code></div>
       <pre><code class="language-lua">local Janitor = require(Packages.Janitor)
 local janitor = Janitor.new()
 
-local squad = NPCEngine.Squad.new({
+local squad = NpcEngine.Squad.new({
     name = "Alpha",
     formation = "wedge",
     leaderPolicy = "healthiest",
@@ -698,7 +698,7 @@ squad:SetShared("target", somePlayer)</code></pre>
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-logo">NpcEngine</div>
         <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
       </div>
       <div class="footer-links">
@@ -711,7 +711,7 @@ squad:SetShared("target", somePlayer)</code></pre>
         </div>
       </div>
     </div>
-    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NpcEngine</div>
   </div>
 </footer>
 

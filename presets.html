@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Presets — NPCEngine</title>
+<title>Presets — NpcEngine</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <a href="index.html" class="nav-logo">NpcEngine</a>
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="api.html">API Reference</a>
@@ -27,9 +27,7 @@
 <div class="presets-page">
 
   <h1>Presets & Archetypes</h1>
-  <p>NPCEngine ships with five built-in archetypes covering the most common NPC roles. Every preset is fully extensible via <code>Presets:Extend()</code> and can be hot-swapped at runtime without rebuilding the NPC.</p>
-
-  <!-- ── Built-in archetypes ─────────────────────────────────────────────── -->
+  <p>NpcEngine ships with five built-in archetypes covering the most common NPC roles. Every preset is fully extensible via <code>Presets:Extend()</code> and can be hot-swapped at runtime without rebuilding the NPC.</p>
 
   <div class="preset-grid">
 
@@ -127,8 +125,6 @@
 
   </div>
 
-  <!-- ── Usage ──────────────────────────────────────────────────────────── -->
-
   <div class="api-group-title" style="margin-top:0">Using Presets</div>
 
   <div class="api-section">
@@ -136,9 +132,9 @@
       <div class="method-name">Apply a preset</div>
     </div>
     <p>The fastest way to create an NPC. <code>Presets:Apply()</code> converts a preset into a config table ready for <code>Engine.new()</code>.</p>
-    <pre><code>local Presets = NPCEngine.Presets
+    <pre><code>local Presets = NpcEngine.Presets
 
-local npc = NPCEngine.new(
+local npc = NpcEngine.new(
     Presets:Apply(Presets:Get("Guard"), workspace.MyNPC)
 )
 
@@ -155,17 +151,17 @@ end</code></pre>
     </div>
     <p>Create a custom preset that inherits from a built-in archetype. Only override the fields you want to change — everything else is inherited.</p>
     <pre><code>Presets:Register("EliteGuard", Presets:Extend("Guard", {
-    MoveSpeed  = 22,
+    MoveSpeed = 22,
     SleepRange = 200,
     perception = {
         sightRange = 90,
-        sightFOV   = 130,
+        sightFOV = 130,
         memoryTime = 12,
     },
 }))
 
 -- Now use it like any other preset
-local npc = NPCEngine.new(
+local npc = NpcEngine.new(
     Presets:Apply(Presets:Get("EliteGuard"), workspace.EliteNPC)
 )</code></pre>
   </div>
@@ -200,7 +196,7 @@ print(table.concat(names, ", "))</code></pre>
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-logo">NpcEngine</div>
         <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
       </div>
       <div class="footer-links">
@@ -213,7 +209,7 @@ print(table.concat(names, ", "))</code></pre>
         </div>
       </div>
     </div>
-    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NpcEngine</div>
   </div>
 </footer>
 

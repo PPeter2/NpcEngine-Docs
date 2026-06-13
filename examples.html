@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Examples — NPCEngine</title>
+<title>Examples — NpcEngine</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <a href="index.html" class="nav-logo">NpcEngine</a>
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="api.html">API Reference</a>
@@ -37,7 +37,7 @@
     <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService        = game:GetService("RunService")
 
-local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+local NpcEngine = require(ReplicatedStorage:WaitForChild("NpcEngine"))
 
 local FOLLOW_RANGE  = 300
 local CLOSE_RANGE   = 10
@@ -45,7 +45,7 @@ local STOP_RANGE    = 5
 local PATH_COOLDOWN = 1.0
 local TICK_RATE     = 0.1
 
-local npc = NPCEngine.new({
+local npc = NpcEngine.new({
     Model      = workspace.FollowerNPC,
     MoveSpeed  = 16,
     SleepRange = 9999,
@@ -112,7 +112,7 @@ end)</code></pre>
     <h2>Patrol Route</h2>
     <p>NPC walks between a list of waypoints in sequence. If a player is spotted it switches to Chase. Returns to patrol when the player is lost.</p>
     <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+local NpcEngine = require(ReplicatedStorage:WaitForChild("NpcEngine"))
 
 -- Define patrol waypoints as Vector3 positions
 local WAYPOINTS = {
@@ -122,12 +122,12 @@ local WAYPOINTS = {
     Vector3.new(10,  5, -20),
 }
 
-local npc = NPCEngine.new(
-    NPCEngine.Presets:Apply(NPCEngine.Presets:Get("Patrol"), workspace.PatrolNPC)
+local npc = NpcEngine.new(
+    NpcEngine.Presets:Apply(NpcEngine.Presets:Get("Patrol"), workspace.PatrolNPC)
 )
 
-NPCEngine.Presets:Get("Patrol").perception and
-    npc:ConfigurePerception(NPCEngine.Presets:Get("Patrol").perception)
+NpcEngine.Presets:Get("Patrol").perception and
+    npc:ConfigurePerception(NpcEngine.Presets:Get("Patrol").perception)
 
 local currentWaypoint = 1
 local patrolling      = false
@@ -201,10 +201,10 @@ npc:ChangeState("Patrol")</code></pre>
     <p>Full boss with three phases driven by health percentage. Phase 1 chases, Phase 2 enrages with speed boost, Phase 3 uses crowd control. Uses Utility AI for phase switching.</p>
     <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+local NpcEngine = require(ReplicatedStorage:WaitForChild("NpcEngine"))
 
-local npc = NPCEngine.new(
-    NPCEngine.Presets:Apply(NPCEngine.Presets:Get("Boss"), workspace.BossNPC)
+local npc = NpcEngine.new(
+    NpcEngine.Presets:Apply(NpcEngine.Presets:Get("Boss"), workspace.BossNPC)
 )
 
 local humanoid = npc._humanoid
@@ -298,7 +298,7 @@ if humanoid then
         elseif pct <= 0.5 and phase < 2 then
             phase = 2
             print("[Boss] Phase 2 — Enrage")
-            NPCEngine.Presets:HotSwap(npc, "Boss")
+            NpcEngine.Presets:HotSwap(npc, "Boss")
             npc:ChangeState("Enrage")
         end
     end)
@@ -321,8 +321,8 @@ npc:EnableDebug("stateBillboard")</code></pre>
     <h2>Enemy Wave Spawner</h2>
     <p>Spawns waves of enemies from a pool. Each wave is larger than the last. Tracks kill count and fires an event when all enemies in a wave are dead.</p>
     <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
-local EventBus = NPCEngine.EventBus.get()
+local NpcEngine = require(ReplicatedStorage:WaitForChild("NpcEngine"))
+local EventBus = NpcEngine.EventBus.get()
 
 local SPAWN_POINTS = {
     CFrame.new( 30, 5, 30),
@@ -331,7 +331,7 @@ local SPAWN_POINTS = {
     CFrame.new(-30, 5, -30),
 }
 
-local pool = NPCEngine.Pool.new({
+local pool = NpcEngine.Pool.new({
     template = workspace.EnemyTemplate,
     poolSize = 30,
     parent = workspace,
@@ -392,10 +392,10 @@ task.delay(3, startWave)</code></pre>
     <h2>Merchant with Dialogue</h2>
     <p>Stationary merchant NPC that greets players when they walk close. Displays dialogue lines in order. Flees if attacked.</p>
     <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+local NpcEngine = require(ReplicatedStorage:WaitForChild("NpcEngine"))
 
-local npc = NPCEngine.new(
-    NPCEngine.Presets:Apply(NPCEngine.Presets:Get("Merchant"), workspace.MerchantNPC)
+local npc = NpcEngine.new(
+    NpcEngine.Presets:Apply(NpcEngine.Presets:Get("Merchant"), workspace.MerchantNPC)
 )
 
 -- Merchant stays still — anchor the root
@@ -485,14 +485,14 @@ npc:EnableDebug("stateBillboard")</code></pre>
     <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage:WaitForChild("Packages")
 local Janitor = require(Packages.Janitor)
-local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+local NpcEngine = require(ReplicatedStorage:WaitForChild("NpcEngine"))
 
 local janitor = Janitor.new()
 
 -- Create three NPCs
 local function makeNPC(modelName, id)
     local m = workspace:WaitForChild(modelName)
-    return NPCEngine.new({
+    return NpcEngine.new({
         Model = m,
         MoveSpeed = 16,
         SleepRange = 150,
@@ -520,7 +520,7 @@ for _, npc in { npc1, npc2, npc3 } do
 end
 
 -- Create the squad
-local squad = NPCEngine.Squad.new({
+local squad = NpcEngine.Squad.new({
     name = "Alpha",
     formation = "wedge",
     leaderPolicy = "healthiest",
@@ -587,7 +587,7 @@ end</code></pre>
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-logo">NpcEngine</div>
         <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
       </div>
       <div class="footer-links">
@@ -600,7 +600,7 @@ end</code></pre>
         </div>
       </div>
     </div>
-    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NpcEngine</div>
   </div>
 </footer>
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NPCEngine — Roblox NPC Framework</title>
+<title>NpcEngine — Roblox NPC Framework</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <a href="index.html" class="nav-logo">NpcEngine</a>
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="api.html">API Reference</a>
@@ -150,7 +150,7 @@
         <div class="step-content">
           <div class="step-title">Install via Wally</div>
           <pre><code class="language-toml">[dependencies]
-NPCEngine = "bs_eryx/npcengine@0.1.0"</code></pre>
+NpcEngine = "bs_eryx/NpcEngine@0.1.0"</code></pre>
         </div>
       </div>
 
@@ -158,9 +158,9 @@ NPCEngine = "bs_eryx/npcengine@0.1.0"</code></pre>
         <div class="step-num">2</div>
         <div class="step-content">
           <div class="step-title">Create an NPC</div>
-          <pre><code class="language-lua">local NPCEngine = require(ReplicatedStorage.NPCEngine)
+          <pre><code class="language-lua">local NpcEngine = require(ReplicatedStorage.NpcEngine)
 
-local npc = NPCEngine.new({
+local npc = NpcEngine.new({
     Model = workspace.MyNPC,
     MoveSpeed = 16,
     SleepRange = 120,
@@ -233,7 +233,7 @@ npc:ChangeState("Idle")</code></pre>
   <div class="container">
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-logo">NpcEngine</div>
         <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
       </div>
       <div class="footer-links">
@@ -252,7 +252,7 @@ npc:ChangeState("Idle")</code></pre>
         </div>
       </div>
     </div>
-    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NpcEngine</div>
   </div>
 </footer>
 
