@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examples — NPCEngine</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="api.html">API Reference</a>
+      <a href="guide.html">Quick Start</a>
+      <a href="presets.html">Presets</a>
+      <a href="examples.html" class="active">Examples</a>
+    </div>
+    <a href="https://github.com/yourusername/NPCEngine" class="nav-github" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="examples-page">
+
+  <h1>Examples</h1>
+  <p style="font-size:16px;color:var(--text-2);margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border);line-height:1.7">
+    Real, copy-paste ready scripts for the most common NPC patterns. Every example uses only the public API.
+  </p>
+
+  <div class="example-block">
+    <h2>Player Follower</h2>
+    <p>NPC follows the closest player. Switches between pathfinding (far) and context steering (close). Stops and faces the player when within stop range.</p>
+    <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService        = game:GetService("RunService")
+
+local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+
+local FOLLOW_RANGE  = 300
+local CLOSE_RANGE   = 10
+local STOP_RANGE    = 5
+local PATH_COOLDOWN = 1.0
+local TICK_RATE     = 0.1
+
+local npc = NPCEngine.new({
+    Model      = workspace.FollowerNPC,
+    MoveSpeed  = 16,
+    SleepRange = 9999,
+    NetworkId  = "Follower_001",
+})
+
+npc:LoadAnimation("idle", "rbxassetid://507766666")
+npc:LoadAnimation("run",  "rbxassetid://507767714")
+npc:MapStateToAnimation("Idle",    "idle")
+npc:MapStateToAnimation("Follow",  "run")
+npc:MapStateToAnimation("Arrived", "idle")
+
+npc:RegisterState("Idle",    { OnEnter = function() npc:StopMovement() end, OnUpdate = function() end, OnExit = function() end })
+npc:RegisterState("Follow",  { OnEnter = function() end, OnUpdate = function() end, OnExit = function() npc:StopMovement() npc:SteerStop() end })
+npc:RegisterState("Arrived", { OnEnter = function() npc:StopMovement() end, OnUpdate = function() end, OnExit = function() end })
+
+npc:ChangeState("Idle")
+npc:EnableDebug("stateBillboard")
+
+local lastPathTime = 0
+local tickAccum    = 0
+
+RunService.Heartbeat:Connect(function(dt)
+    tickAccum += dt
+    if tickAccum < TICK_RATE then return end
+    tickAccum = 0
+
+    local target = npc:GetClosestPlayerInRadius(FOLLOW_RANGE)
+    if not target or not target.Character then
+        if npc._fsm._currentState ~= "Idle" then npc:ChangeState("Idle") end
+        npc._animController:Tick("Idle")
+        return
+    end
+
+    local root   = target.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    local myRoot = npc._rootPart
+    local dist   = (root.Position - myRoot.Position).Magnitude
+
+    if dist <= STOP_RANGE then
+        if npc._fsm._currentState ~= "Arrived" then npc:ChangeState("Arrived") end
+        local flat = Vector3.new((root.Position - myRoot.Position).X, 0, (root.Position - myRoot.Position).Z)
+        if flat.Magnitude > 0.1 then myRoot.CFrame = CFrame.lookAt(myRoot.Position, myRoot.Position + flat) end
+
+    elseif dist <= CLOSE_RANGE then
+        if npc._fsm._currentState ~= "Follow" then npc:ChangeState("Follow") end
+        npc:SteerToward(npc:PredictTargetPosition(root, 0.2))
+
+    else
+        if npc._fsm._currentState ~= "Follow" then npc:ChangeState("Follow") end
+        local now = os.clock()
+        if now - lastPathTime >= PATH_COOLDOWN then
+            lastPathTime = now
+            npc:PathToAsync(npc:PredictTargetPosition(root, 0.2)):catch(function() end)
+        end
+    end
+
+    npc._animController:Tick(npc._fsm._currentState)
+end)</code></pre>
+  </div>
+
+  <div class="example-block">
+    <h2>Patrol Route</h2>
+    <p>NPC walks between a list of waypoints in sequence. If a player is spotted it switches to Chase. Returns to patrol when the player is lost.</p>
+    <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+
+-- Define patrol waypoints as Vector3 positions
+local WAYPOINTS = {
+    Vector3.new(10,  5,  10),
+    Vector3.new(40,  5,  10),
+    Vector3.new(40,  5, -20),
+    Vector3.new(10,  5, -20),
+}
+
+local npc = NPCEngine.new(
+    NPCEngine.Presets:Apply(NPCEngine.Presets:Get("Patrol"), workspace.PatrolNPC)
+)
+
+NPCEngine.Presets:Get("Patrol").perception and
+    npc:ConfigurePerception(NPCEngine.Presets:Get("Patrol").perception)
+
+local currentWaypoint = 1
+local patrolling      = false
+
+local function nextWaypoint()
+    currentWaypoint = (currentWaypoint % #WAYPOINTS) + 1
+end
+
+npc:RegisterState("Patrol", {
+    OnEnter = function()
+        patrolling = true
+        local function walkRoute()
+            if not patrolling then return end
+            npc:PathToAsync(WAYPOINTS[currentWaypoint])
+                :andThen(function()
+                    nextWaypoint()
+                    task.wait(1)   -- pause at waypoint
+                    walkRoute()
+                end)
+                :catch(function()
+                    nextWaypoint()
+                    walkRoute()
+                end)
+        end
+        walkRoute()
+    end,
+    OnUpdate = function()
+        local target = npc:GetAggroTarget()
+        if target then
+            npc:ChangeState("Chase")
+        end
+    end,
+    OnExit = function()
+        patrolling = false
+        npc:StopMovement()
+    end,
+})
+
+npc:RegisterState("Chase", {
+    OnEnter = function()
+        print("[Patrol] Chasing player!")
+    end,
+    OnUpdate = function()
+        local target = npc:GetAggroTarget()
+        if not target then
+            npc:ChangeState("Patrol")
+            return
+        end
+        local char = target.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        npc:PathToAsync(root.Position):catch(function() end)
+    end,
+    OnExit = function()
+        npc:StopMovement()
+        print("[Patrol] Returning to route")
+    end,
+})
+
+-- Wire perception into aggro
+npc._perception.OnTargetSpotted:Connect(function(player)
+    npc:AddThreat(player, 100)
+end)
+
+npc:ChangeState("Patrol")</code></pre>
+  </div>
+
+  <div class="example-block">
+    <h2>Boss Fight NPC</h2>
+    <p>Full boss with three phases driven by health percentage. Phase 1 chases, Phase 2 enrages with speed boost, Phase 3 uses crowd control. Uses Utility AI for phase switching.</p>
+    <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+
+local npc = NPCEngine.new(
+    NPCEngine.Presets:Apply(NPCEngine.Presets:Get("Boss"), workspace.BossNPC)
+)
+
+local humanoid = npc._humanoid
+local phase = 1
+local lastPath = 0
+
+-- States
+
+npc:RegisterState("Idle", {
+    OnEnter = function() npc:StopMovement() end,
+    OnUpdate = function() end,
+    OnExit = function() end,
+})
+
+npc:RegisterState("Chase", {
+    OnEnter = function() print("[Boss] Phase", phase, "— Chasing") end,
+    OnUpdate = function()
+        local target = npc:GetAggroTarget()
+        if not target then return end
+        local char = target.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        local now = os.clock()
+        if now - lastPath >= 1 then
+            lastPath = now
+            npc:PathToAsync(npc:PredictTargetPosition(root, 0.3)):catch(function() end)
+        end
+    end,
+    OnExit = function() npc:StopMovement() end,
+})
+
+npc:RegisterState("Enrage", {
+    OnEnter = function()
+        print("[Boss] ENRAGED — Phase 2")
+        if humanoid then humanoid.WalkSpeed = 28 end
+    end,
+    OnUpdate = function()
+        local target = npc:GetAggroTarget()
+        if not target then return end
+        local char = target.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        -- Steer instead of path during enrage for more aggressive movement
+        npc:SteerToward(npc:PredictTargetPosition(root, 0.5))
+    end,
+    OnExit = function()
+        if humanoid then humanoid.WalkSpeed = 18 end
+        npc:SteerStop()
+    end,
+})
+
+npc:RegisterState("Slam", {
+    OnEnter = function()
+        print("[Boss] SLAM — Phase 3")
+        -- Stun all nearby players with a shockwave effect
+        local targets = npc:GetPerceivedTargets()
+        for _, player in targets do
+            -- You would apply your damage/effect here
+            print("[Boss] Slamming", player.Name)
+        end
+    end,
+    OnUpdate = function() end,
+    OnExit   = function() end,
+})
+
+-- Phase transitions via health
+
+if humanoid then
+    humanoid.HealthChanged:Connect(function(hp)
+        local pct = hp / humanoid.MaxHealth
+
+        if pct <= 0 then
+            npc:SetSleeping(true)
+            npc:Destroy()
+            return
+        end
+
+        if pct <= 0.25 and phase < 3 then
+            phase = 3
+            print("[Boss] Phase 3 — Slam mode")
+            npc:ApplyCrowdControl("Stun", 0.5)
+            task.delay(0.6, function()
+                npc:ChangeState("Slam")
+                task.delay(2, function()
+                    npc:ChangeState("Enrage")
+                end)
+            end)
+
+        elseif pct <= 0.5 and phase < 2 then
+            phase = 2
+            print("[Boss] Phase 2 — Enrage")
+            NPCEngine.Presets:HotSwap(npc, "Boss")
+            npc:ChangeState("Enrage")
+        end
+    end)
+end
+
+-- Aggro on perception
+
+npc._perception.OnTargetSpotted:Connect(function(player)
+    npc:AddThreat(player, 200)
+    if npc._fsm._currentState == "Idle" then
+        npc:ChangeState("Chase")
+    end
+end)
+
+npc:ChangeState("Idle")
+npc:EnableDebug("stateBillboard")</code></pre>
+  </div>
+
+  <div class="example-block">
+    <h2>Enemy Wave Spawner</h2>
+    <p>Spawns waves of enemies from a pool. Each wave is larger than the last. Tracks kill count and fires an event when all enemies in a wave are dead.</p>
+    <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+local EventBus = NPCEngine.EventBus.get()
+
+local SPAWN_POINTS = {
+    CFrame.new( 30, 5, 30),
+    CFrame.new(-30, 5, 30),
+    CFrame.new( 30, 5, -30),
+    CFrame.new(-30, 5, -30),
+}
+
+local pool = NPCEngine.Pool.new({
+    template = workspace.EnemyTemplate,
+    poolSize = 30,
+    parent = workspace,
+    onSpawn = function(npc, _model)
+        npc:RegisterState("Chase", {
+            OnEnter  = function() end,
+            OnUpdate = function()
+                local target = npc:GetClosestPlayerInRadius(80)
+                if not target then return end
+                local char = target.Character
+                if not char then return end
+                local root = char:FindFirstChild("HumanoidRootPart")
+                if not root then return end
+                npc:PathToAsync(root.Position):catch(function() end)
+            end,
+            OnExit = function() npc:StopMovement() end,
+        })
+        npc:ChangeState("Chase")
+    end,
+    moveSpeed = 14,
+    sleepRange = 150,
+})
+
+local waveNumber = 0
+local aliveCount = 0
+local waveActive = false
+
+local function startWave()
+    waveNumber += 1
+    local count = waveNumber * 5   -- wave 1 = 5 enemies, wave 2 = 10, etc.
+
+    print(string.format("[WaveSpawner] Wave %d — Spawning %d enemies", waveNumber, count))
+
+    aliveCount = count
+    waveActive = true
+
+    pool:SpawnWave(SPAWN_POINTS, count, 0.3)
+end
+
+-- Listen for NPC deaths via EventBus
+EventBus:On("npc.destroyed", function(_npcId)
+    if not waveActive then return end
+    aliveCount -= 1
+    print(string.format("[WaveSpawner] %d enemies remaining", aliveCount))
+    if aliveCount <= 0 then
+        waveActive = false
+        print("[WaveSpawner] Wave " .. waveNumber .. " complete!")
+        task.delay(5, function()
+            startWave()
+        end)
+    end
+end)
+
+-- Start wave 1 after a short delay
+task.delay(3, startWave)</code></pre>
+  </div>
+  <div class="example-block">
+    <h2>Merchant with Dialogue</h2>
+    <p>Stationary merchant NPC that greets players when they walk close. Displays dialogue lines in order. Flees if attacked.</p>
+    <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+
+local npc = NPCEngine.new(
+    NPCEngine.Presets:Apply(NPCEngine.Presets:Get("Merchant"), workspace.MerchantNPC)
+)
+
+-- Merchant stays still — anchor the root
+local root = npc._rootPart
+if root then root.Anchored = true end
+
+-- Dialogue script
+npc:SetDialogueScript({
+    { speaker = "Merchant", text = "Welcome, traveller! Looking to trade?",         duration = 3 },
+    { speaker = "Merchant", text = "I have the finest wares in the region.",        duration = 3 },
+    { speaker = "Merchant", text = "Take a look — first purchase is discounted!",   duration = 3 },
+})
+
+npc:SetDialogueRadius(12)
+
+-- Wire dialogue events to your UI system
+npc:OnDialogueStarted(function(player)
+    print("[Merchant] Started talking to:", player.Name)
+    -- Show your dialogue UI here
+end)
+
+npc:OnLineSpoken(function(line, index)
+    print(string.format("[Merchant] Line %d: %s", index, line.text))
+    -- Update your dialogue UI here
+end)
+
+npc:OnDialogueEnded(function(player, completed)
+    print(string.format("[Merchant] Finished with %s (completed: %s)",
+        player.Name, tostring(completed)))
+    -- Hide your dialogue UI here
+end)
+
+-- Flee state if attacked
+npc:RegisterState("Flee", {
+    OnEnter = function()
+        print("[Merchant] Help! I'm being attacked!")
+        npc:InterruptDialogue()
+        if root then root.Anchored = false end
+    end,
+    OnUpdate = function()
+        -- Path away from the aggro target
+        local threat = npc:GetAggroTarget()
+        if not threat then
+            npc:ChangeState("Idle")
+            return
+        end
+        local char = threat.Character
+        if not char then return end
+        local threatRoot = char:FindFirstChild("HumanoidRootPart")
+        if not threatRoot then return end
+        -- Run in the opposite direction
+        local away = npc._rootPart.Position +
+                     (npc._rootPart.Position - threatRoot.Position).Unit * 30
+        npc:PathToAsync(away):catch(function() end)
+    end,
+    OnExit = function()
+        npc:StopMovement()
+        if root then root.Anchored = true end
+    end,
+})
+
+npc:RegisterState("Idle", {
+    OnEnter = function() end,
+    OnUpdate = function() end,
+    OnExit = function() end,
+})
+
+npc:ChangeState("Idle")
+
+-- React to damage via humanoid
+local humanoid = npc._humanoid
+if humanoid then
+    humanoid.HealthChanged:Connect(function(hp)
+        local pct = hp / humanoid.MaxHealth
+        if pct < 0.5 and npc._fsm._currentState ~= "Flee" then
+            npc:AddThreat(game:GetService("Players"):GetPlayers()[1], 999)
+            npc:ChangeState("Flee")
+        end
+    end)
+end
+
+npc:EnableDebug("stateBillboard")</code></pre>
+  </div>
+  <div class="example-block">
+    <h2>Squad Attack</h2>
+    <p>Three NPCs operating as a squad. Leader chases, followers hold formation. If the leader dies, the healthiest follower is elected as new leader.</p>
+    <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Packages = ReplicatedStorage:WaitForChild("Packages")
+local Janitor = require(Packages.Janitor)
+local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+
+local janitor = Janitor.new()
+
+-- Create three NPCs
+local function makeNPC(modelName, id)
+    local m = workspace:WaitForChild(modelName)
+    return NPCEngine.new({
+        Model = m,
+        MoveSpeed = 16,
+        SleepRange = 150,
+        NetworkId = "Squad_" .. id,
+    })
+end
+
+local npc1 = makeNPC("SquadNPC_1", "1")
+local npc2 = makeNPC("SquadNPC_2", "2")
+local npc3 = makeNPC("SquadNPC_3", "3")
+
+-- Register Chase state on all three
+for _, npc in { npc1, npc2, npc3 } do
+    npc:RegisterState("Chase", {
+        OnEnter = function() end,
+        OnUpdate = function() end,
+        OnExit = function() npc:StopMovement() end,
+    })
+    npc:RegisterState("Idle", {
+        OnEnter = function() end,
+        OnUpdate = function() end,
+        OnExit = function() end,
+    })
+    npc:ChangeState("Idle")
+end
+
+-- Create the squad
+local squad = NPCEngine.Squad.new({
+    name = "Alpha",
+    formation = "wedge",
+    leaderPolicy = "healthiest",
+}, janitor)
+
+squad:AddMember(npc1)
+squad:AddMember(npc2)
+squad:AddMember(npc3)
+
+squad.OnLeaderChanged:Connect(function(newLeader)
+    print("[Squad] New leader elected")
+end)
+
+-- Leader chases, followers hold formation via TickFormation
+local lastPath = 0
+local tickAccum = 0
+
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+    tickAccum += dt
+    if tickAccum < 0.2 then return end
+    tickAccum = 0
+
+    local leader = squad:GetLeader()
+    if not leader then return end
+
+    -- Leader chases the squad's shared target
+    local target = squad:GetShared("target") :: Player?
+    if target then
+        local char = target.Character
+        if char then
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                local now = os.clock()
+                if now - lastPath >= 1.2 then
+                    lastPath = now
+                    leader:PathToAsync(root.Position):catch(function() end)
+                end
+            end
+        end
+    end
+
+    -- Tick formation for all followers
+    squad:TickFormation()
+end)
+
+-- Wire perception of any member into the shared blackboard
+for _, npc in { npc1, npc2, npc3 } do
+    npc._perception.OnTargetSpotted:Connect(function(player)
+        squad:SetShared("target", player)
+        squad:SetGroupState("Chase")
+        print("[Squad] Target acquired:", player.Name)
+    end)
+    npc._perception.OnTargetLost:Connect(function()
+        if not squad:GetShared("target") then
+            squad:SetGroupState("Idle")
+        end
+    end)
+end</code></pre>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <div class="footer-col-title">Docs</div>
+          <a href="guide.html">Quick Start</a>
+          <a href="api.html">API Reference</a>
+          <a href="presets.html">Presets</a>
+          <a href="examples.html">Examples</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

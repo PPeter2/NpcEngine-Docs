@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presets — NPCEngine</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="api.html">API Reference</a>
+      <a href="guide.html">Quick Start</a>
+      <a href="presets.html" class="active">Presets</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <a href="https://github.com/yourusername/NPCEngine" class="nav-github" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="presets-page">
+
+  <h1>Presets & Archetypes</h1>
+  <p>NPCEngine ships with five built-in archetypes covering the most common NPC roles. Every preset is fully extensible via <code>Presets:Extend()</code> and can be hot-swapped at runtime without rebuilding the NPC.</p>
+
+  <!-- ── Built-in archetypes ─────────────────────────────────────────────── -->
+
+  <div class="preset-grid">
+
+    <div class="preset-card">
+      <div class="preset-card-header">
+        <div class="preset-name">Ambient</div>
+        <div class="preset-tag tag-ambient">Passive</div>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6">
+        Low-threat background NPC. Minimal AI cost. Sleeps aggressively. No aggro range. Good for crowds, villagers, wildlife.
+      </p>
+      <div class="preset-stat-row">
+        <div class="preset-stat"><div class="preset-stat-label">Move Speed</div><div class="preset-stat-val">8</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sleep Range</div><div class="preset-stat-val">60</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight Range</div><div class="preset-stat-val">20</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight FOV</div><div class="preset-stat-val">60°</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Hearing</div><div class="preset-stat-val">10</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Aggro Range</div><div class="preset-stat-val">None</div></div>
+      </div>
+    </div>
+
+    <div class="preset-card">
+      <div class="preset-card-header">
+        <div class="preset-name">Patrol</div>
+        <div class="preset-tag tag-patrol">Roaming</div>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6">
+        Medium-threat NPC that actively searches its area. Will aggro on players within range. Good for enemy soldiers, guards on routes.
+      </p>
+      <div class="preset-stat-row">
+        <div class="preset-stat"><div class="preset-stat-label">Move Speed</div><div class="preset-stat-val">14</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sleep Range</div><div class="preset-stat-val">100</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight Range</div><div class="preset-stat-val">50</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight FOV</div><div class="preset-stat-val">90°</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Hearing</div><div class="preset-stat-val">25</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Aggro Range</div><div class="preset-stat-val">50</div></div>
+      </div>
+    </div>
+
+    <div class="preset-card">
+      <div class="preset-card-header">
+        <div class="preset-name">Guard</div>
+        <div class="preset-tag tag-guard">Defender</div>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6">
+        Stationary defender with high awareness. Wider FOV and longer memory than Patrol. Good for base defenders, dungeon guardians.
+      </p>
+      <div class="preset-stat-row">
+        <div class="preset-stat"><div class="preset-stat-label">Move Speed</div><div class="preset-stat-val">16</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sleep Range</div><div class="preset-stat-val">120</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight Range</div><div class="preset-stat-val">70</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight FOV</div><div class="preset-stat-val">100°</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Hearing</div><div class="preset-stat-val">35</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Aggro Range</div><div class="preset-stat-val">60</div></div>
+      </div>
+    </div>
+
+    <div class="preset-card">
+      <div class="preset-card-header">
+        <div class="preset-name">Merchant</div>
+        <div class="preset-tag tag-merchant">Friendly</div>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6">
+        Passive NPC that talks to players. Wide FOV for welcoming players. Flees at very low health. Good for shop NPCs, quest givers.
+      </p>
+      <div class="preset-stat-row">
+        <div class="preset-stat"><div class="preset-stat-label">Move Speed</div><div class="preset-stat-val">10</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sleep Range</div><div class="preset-stat-val">80</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight Range</div><div class="preset-stat-val">30</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight FOV</div><div class="preset-stat-val">120°</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Hearing</div><div class="preset-stat-val">20</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Flee HP</div><div class="preset-stat-val">10%</div></div>
+      </div>
+    </div>
+
+    <div class="preset-card" style="grid-column: span 2">
+      <div class="preset-card-header">
+        <div class="preset-name">Boss</div>
+        <div class="preset-tag tag-boss">Apex</div>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;line-height:1.6">
+        Maximum threat. Never sleeps. 180° FOV — sees almost everything. 30 second memory. Never flees. Designed for raid bosses and elite enemies.
+      </p>
+      <div class="preset-stat-row" style="grid-template-columns: repeat(4, 1fr)">
+        <div class="preset-stat"><div class="preset-stat-label">Move Speed</div><div class="preset-stat-val">18</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sleep Range</div><div class="preset-stat-val">999 (never)</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight Range</div><div class="preset-stat-val">100</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Sight FOV</div><div class="preset-stat-val">180°</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Hearing</div><div class="preset-stat-val">60</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Smell</div><div class="preset-stat-val">20</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Memory Time</div><div class="preset-stat-val">30s</div></div>
+        <div class="preset-stat"><div class="preset-stat-label">Aggro Range</div><div class="preset-stat-val">100</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Usage ──────────────────────────────────────────────────────────── -->
+
+  <div class="api-group-title" style="margin-top:0">Using Presets</div>
+
+  <div class="api-section">
+    <div class="method-header">
+      <div class="method-name">Apply a preset</div>
+    </div>
+    <p>The fastest way to create an NPC. <code>Presets:Apply()</code> converts a preset into a config table ready for <code>Engine.new()</code>.</p>
+    <pre><code>local Presets = NPCEngine.Presets
+
+local npc = NPCEngine.new(
+    Presets:Apply(Presets:Get("Guard"), workspace.MyNPC)
+)
+
+-- Apply the preset's perception config too
+local preset = Presets:Get("Guard")
+if preset.perception then
+    npc:ConfigurePerception(preset.perception)
+end</code></pre>
+  </div>
+
+  <div class="api-section">
+    <div class="method-header">
+      <div class="method-name">Extend a preset</div>
+    </div>
+    <p>Create a custom preset that inherits from a built-in archetype. Only override the fields you want to change — everything else is inherited.</p>
+    <pre><code>Presets:Register("EliteGuard", Presets:Extend("Guard", {
+    MoveSpeed  = 22,
+    SleepRange = 200,
+    perception = {
+        sightRange = 90,
+        sightFOV   = 130,
+        memoryTime = 12,
+    },
+}))
+
+-- Now use it like any other preset
+local npc = NPCEngine.new(
+    Presets:Apply(Presets:Get("EliteGuard"), workspace.EliteNPC)
+)</code></pre>
+  </div>
+
+  <div class="api-section">
+    <div class="method-header">
+      <div class="method-name">Hot-swap at runtime</div>
+    </div>
+    <p>Change an NPC's preset while it is live — updates move speed, sleep range, and perception without rebuilding the instance.</p>
+    <pre><code>-- Boss enrages at 50% health — swap to a faster preset
+humanoid.HealthChanged:Connect(function(hp)
+    local pct = hp / humanoid.MaxHealth
+    if pct < 0.5 then
+        Presets:HotSwap(npc, "Boss")
+        print("Boss enraged!")
+    end
+end)</code></pre>
+  </div>
+
+  <div class="api-section">
+    <div class="method-header">
+      <div class="method-name">List all presets</div>
+    </div>
+    <pre><code>local names = Presets:List()
+-- { "Ambient", "Boss", "EliteGuard", "Guard", "Merchant", "Patrol" }
+print(table.concat(names, ", "))</code></pre>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <div class="footer-col-title">Docs</div>
+          <a href="guide.html">Quick Start</a>
+          <a href="api.html">API Reference</a>
+          <a href="presets.html">Presets</a>
+          <a href="examples.html">Examples</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

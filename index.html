@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPCEngine — Roblox NPC Framework</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="api.html">API Reference</a>
+      <a href="guide.html">Quick Start</a>
+      <a href="presets.html">Presets</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <a href="https://github.com/yourusername/NPCEngine" class="nav-github" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Roblox Luau · Wally Package</div>
+    <h1 class="hero-title">The last NPC engine<br>you will ever need</h1>
+    <p class="hero-sub">Enterprise-grade NPC framework for Roblox. FSM, Behaviour Trees, Spatial Grid, LOD Brains, Context Steering, Perception, Aggro, Pooling — zero memory leaks.</p>
+    <div class="hero-cta">
+      <a href="guide.html" class="btn-primary">Get Started</a>
+      <a href="api.html" class="btn-secondary">API Reference</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">0.11 MB</span><span class="stat-label">per NPC</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">100+</span><span class="stat-label">NPCs simultaneously</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">0.14 ms</span><span class="stat-label">spatial grid / frame</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">21</span><span class="stat-label">systems included</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="features">
+  <div class="container">
+    <div class="section-label">What's inside</div>
+    <h2 class="section-title">Everything your NPCs need</h2>
+    <div class="feature-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Finite State Machine</h3>
+        <p>Register states with OnEnter, OnUpdate, OnExit. Interrupt-safe transitions with sub-Janitor cleanup per state. Crowd control hooks built in.</p>
+        <a href="api.html#fsm" class="feature-link">RegisterState, ChangeState →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>Behaviour Trees</h3>
+        <p>Selector, Sequence, Parallel, Decorator nodes. Condition and Action leaves. Debug mode prints the full tree evaluation trace.</p>
+        <a href="api.html#bt" class="feature-link">BehaviourTree API →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👁</div>
+        <h3>Perception System</h3>
+        <p>Sight cone with FOV + raycast, hearing radius, smell radius. Stimulus memory with time decay and last-known-position tracking.</p>
+        <a href="api.html#perception" class="feature-link">ConfigurePerception →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Aggro Table</h3>
+        <p>Multi-target threat tracking with decay. Taunt API for forced aggro switching. Priority target always resolves to the highest threat.</p>
+        <a href="api.html#aggro" class="feature-link">AddThreat, Taunt →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔀</div>
+        <h3>Context Steering</h3>
+        <p>Interest and danger directional maps. NPCs flow around crowds and obstacles without recomputing their full path every frame.</p>
+        <a href="api.html#steering" class="feature-link">SteerToward →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📡</div>
+        <h3>LOD Brain</h3>
+        <p>Adaptive tick rate scaling. Close NPCs run at 60Hz. Background NPCs scale to 5Hz or sleep entirely. Zero wasted server cycles.</p>
+        <a href="api.html#lod" class="feature-link">SetSleeping →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🗺</div>
+        <h3>Pathfinder v2</h3>
+        <p>Cancellable Promise chain wrapping PathfindingService. Jump support, StreamingEnabled safety, stuck detection with automatic recompute.</p>
+        <a href="api.html#pathfinder" class="feature-link">PathToAsync →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">♻️</div>
+        <h3>Object Pooling</h3>
+        <p>Pre-warmed NPC pool with frame-budgeted allocation via task.defer. Wave events spawn hundreds of NPCs with zero lag spikes.</p>
+        <a href="api.html#pool" class="feature-link">Pool.new, SpawnWave →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Squad System</h3>
+        <p>Multiple NPCs sharing a squad blackboard. Formation movement (line, wedge, flanks, circle), leader election, group state transitions.</p>
+        <a href="api.html#squad" class="feature-link">Squad.new →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎭</div>
+        <h3>Dialogue System</h3>
+        <p>Proximity-triggered interaction zones. Dialogue script runner with per-line duration. Fully interruptible by CC or death.</p>
+        <a href="api.html#dialogue" class="feature-link">SetDialogueScript →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎬</div>
+        <h3>Animation Controller</h3>
+        <p>State-driven AnimationTrack blending. Walk, run, idle, attack tracks mapped to FSM states. Speed-based automatic slot resolution.</p>
+        <a href="api.html#anim" class="feature-link">LoadAnimation →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>Config Presets</h3>
+        <p>Five built-in archetypes: Ambient, Patrol, Guard, Merchant, Boss. Extend and override any preset. Hot-swap at runtime.</p>
+        <a href="presets.html" class="feature-link">Presets →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="quickstart">
+  <div class="container">
+    <div class="section-label">Quick start</div>
+    <h2 class="section-title">Up in 60 seconds</h2>
+    <div class="code-steps">
+
+      <div class="code-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Install via Wally</div>
+          <pre><code class="language-toml">[dependencies]
+NPCEngine = "bs_eryx/npcengine@0.1.0"</code></pre>
+        </div>
+      </div>
+
+      <div class="code-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Create an NPC</div>
+          <pre><code class="language-lua">local NPCEngine = require(ReplicatedStorage.NPCEngine)
+
+local npc = NPCEngine.new({
+    Model = workspace.MyNPC,
+    MoveSpeed = 16,
+    SleepRange = 120,
+})</code></pre>
+        </div>
+      </div>
+
+      <div class="code-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Register states and go</div>
+          <pre><code class="language-lua">npc:RegisterState("Idle", {
+    OnEnter  = function() print("Idle") end,
+    OnUpdate = function()
+        local target = npc:GetClosestPlayerInRadius(50)
+        if target then npc:ChangeState("Chase") end
+    end,
+    OnExit = function() end,
+})
+
+npc:ChangeState("Idle")</code></pre>
+        </div>
+      </div>
+
+    </div>
+    <a href="guide.html" class="btn-primary" style="margin-top:32px;display:inline-block;">Full Quick Start Guide →</a>
+  </div>
+</section>
+
+<section class="benchmarks">
+  <div class="container">
+    <div class="section-label">Performance</div>
+    <h2 class="section-title">Built for production scale</h2>
+    <div class="bench-grid">
+      <div class="bench-card">
+        <div class="bench-val">0.11 MB</div>
+        <div class="bench-name">Memory per NPC</div>
+        <div class="bench-note">Full engine instance including all 21 sub-systems</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-val">0.14 ms</div>
+        <div class="bench-name">Spatial grid lookup</div>
+        <div class="bench-note">100 NPCs querying simultaneously per frame</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-val">0.57 ms</div>
+        <div class="bench-name">1000 BT ticks</div>
+        <div class="bench-note">3-branch selector with conditions and actions</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-val">16.6 ms</div>
+        <div class="bench-name">Frame time @ 100 NPCs</div>
+        <div class="bench-note">Studio solo, all systems active, LOD at 30% sleep</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-val">1.0 ms</div>
+        <div class="bench-name">10,000 blackboard ops</div>
+        <div class="bench-note">5000 writes + 5000 reads</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-val">3.4 ms</div>
+        <div class="bench-name">1000 FSM transitions</div>
+        <div class="bench-note">Includes OnExit, OnEnter, Janitor cleanup</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <div class="footer-col-title">Docs</div>
+          <a href="guide.html">Quick Start</a>
+          <a href="api.html">API Reference</a>
+          <a href="presets.html">Presets</a>
+          <a href="examples.html">Examples</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Project</div>
+          <a href="https://github.com/yourusername/NPCEngine" target="_blank">GitHub</a>
+          <a href="https://github.com/yourusername/NPCEngine/blob/main/CHANGELOG.md" target="_blank">Changelog</a>
+          <a href="https://github.com/yourusername/NPCEngine/blob/main/LICENSE" target="_blank">License</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

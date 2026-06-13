@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Start — NPCEngine</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="api.html">API Reference</a>
+      <a href="guide.html" class="active">Quick Start</a>
+      <a href="presets.html">Presets</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <a href="https://github.com/yourusername/NPCEngine" class="nav-github" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="guide-layout">
+  <aside class="guide-sidebar">
+    <a href="#install">Installation</a>
+    <a href="#first-npc">Your first NPC</a>
+    <a href="#states">States</a>
+    <a href="#perception">Perception</a>
+    <a href="#pathfinding">Pathfinding</a>
+    <a href="#animations">Animations</a>
+    <a href="#presets">Using Presets</a>
+    <a href="#bt">Behaviour Trees</a>
+    <a href="#debug">Debug Overlay</a>
+    <a href="#destroy">Cleanup</a>
+  </aside>
+
+  <main class="guide-main">
+    <h1>Quick Start</h1>
+    <p class="guide-intro">This guide walks through building a complete working NPC from scratch in under 10 minutes.</p>
+
+    <h2 id="install">Installation</h2>
+    <p>Add NPCEngine to your <code>wally.toml</code>:</p>
+    <pre><code>[dependencies]
+NPCEngine = "bs_eryx/npcengine@0.1.0"</code></pre>
+    <p>Run <code>wally install</code> then sync with Rojo. The engine will appear at <code>ReplicatedStorage.Packages.NPCEngine</code>.</p>
+
+    <h2 id="first-npc">Your first NPC</h2>
+    <p>Place a <code>Model</code> in Workspace. It needs a <code>Humanoid</code> and a <code>HumanoidRootPart</code>. Then in a <code>Script</code> under <code>ServerScriptService</code>:</p>
+    <pre><code>local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local NPCEngine = require(ReplicatedStorage:WaitForChild("NPCEngine"))
+
+local npc = NPCEngine.new({
+    Model = workspace.MyNPC,
+    MoveSpeed = 16,
+    SleepRange = 120,
+})</code></pre>
+    <p>That's it. The NPC is now live with all sub-systems initialized.</p>
+
+    <h2 id="states">States</h2>
+    <p>NPCEngine uses a Finite State Machine. Register every state before you transition to it:</p>
+    <pre><code>npc:RegisterState("Idle", {
+    OnEnter = function()
+        print("Entered Idle")
+    end,
+    OnUpdate = function()
+        -- Runs every LOD tick while in this state
+        local target = npc:GetClosestPlayerInRadius(50)
+        if target then
+            npc:ChangeState("Chase")
+        end
+    end,
+    OnExit = function()
+        print("Exited Idle")
+    end,
+})
+
+npc:RegisterState("Chase", {
+    OnEnter = function() end,
+    OnUpdate = function() end,
+    OnExit = function()
+        npc:StopMovement()
+    end,
+})
+
+-- Start in Idle
+npc:ChangeState("Idle")</code></pre>
+
+    <h2 id="perception">Perception</h2>
+    <p>Configure how the NPC detects players. Three senses — sight, hearing, smell — each with independent range and memory decay:</p>
+    <pre><code>npc:ConfigurePerception({
+    sightRange = 60,
+    sightFOV = 90,    -- degrees
+    hearingRange = 30,
+    smellRange = 8,
+    memoryTime = 6,     -- seconds before forgetting
+})
+
+-- React when a player is spotted
+npc._perception.OnTargetSpotted:Connect(function(player, stimulus)
+    print("Spotted", player.Name, "via", stimulus)
+    npc:AddThreat(player, 100)
+end)
+
+-- React when a player is lost
+npc._perception.OnTargetLost:Connect(function(player, lastKnownPos)
+    print("Lost", player.Name, "— last seen at", lastKnownPos)
+end)</code></pre>
+
+    <h2 id="pathfinding">Pathfinding</h2>
+    <p>Navigate the NPC to any world position. Returns a cancellable Promise:</p>
+    <pre><code>-- Simple path
+npc:PathToAsync(targetPosition)
+    :andThen(function()
+        print("Arrived")
+    end)
+    :catch(function(err)
+        warn("Path failed:", err)
+    end)
+
+-- Predict where a moving player will be
+local playerRoot = player.Character.HumanoidRootPart
+local predicted = npc:PredictTargetPosition(playerRoot, 0.3)
+npc:PathToAsync(predicted):catch(function() end)
+
+-- Stop immediately
+npc:StopMovement()</code></pre>
+
+    <h2 id="animations">Animations</h2>
+    <p>Load tracks and map them to FSM states. The animation controller blends automatically:</p>
+    <pre><code>-- Load tracks (use your own asset IDs)
+npc:LoadAnimation("idle", "rbxassetid://507766666")
+npc:LoadAnimation("walk", "rbxassetid://507777826")
+npc:LoadAnimation("run",  "rbxassetid://507767714")
+
+-- Map states to slots
+npc:MapStateToAnimation("Idle",  "idle")
+npc:MapStateToAnimation("Chase", "run")
+
+-- Tick the controller in your update loop
+npc._animController:Tick(npc._fsm._currentState)</code></pre>
+
+    <h2 id="presets">Using Presets</h2>
+    <p>Skip manual config with built-in archetypes:</p>
+    <pre><code>local Presets = NPCEngine.Presets
+
+-- Use a built-in archetype
+local config = Presets:Apply(Presets:Get("Guard"), workspace.MyNPC)
+local npc = NPCEngine.new(config)
+
+-- Apply the preset's perception settings
+local preset = Presets:Get("Guard")
+if preset.perception then
+    npc:ConfigurePerception(preset.perception)
+end
+
+-- Create a custom preset inheriting from Guard
+Presets:Register("EliteGuard", Presets:Extend("Guard", {
+    MoveSpeed = 22,
+    SleepRange = 200,
+    perception = { sightRange = 90, sightFOV = 130 },
+}))
+
+-- Hot-swap preset at runtime
+Presets:HotSwap(npc, "Boss")</code></pre>
+
+    <h2 id="bt">Behaviour Trees</h2>
+    <p>Replace manual state transitions with a declarative behaviour tree:</p>
+    <pre><code>local BT = NPCEngine.BT
+
+npc:SetBehaviourTree(
+    BT.Selector({
+
+        -- Chase if we have an aggro target
+        BT.Sequence({
+            BT.Condition(function()
+                return npc:GetAggroTarget() ~= nil
+            end),
+            BT.Action(function()
+                npc:ChangeState("Chase")
+                return "Running"
+            end),
+        }),
+
+        -- Investigate last known position
+        BT.Sequence({
+            BT.Condition(function()
+                return #npc:GetPerceivedTargets() > 0
+            end),
+            BT.Action(function()
+                local targets = npc:GetPerceivedTargets()
+                local lkp     = npc:GetLastKnownPosition(targets[1])
+                if lkp then
+                    npc:PathToAsync(lkp):catch(function() end)
+                end
+                return "Running"
+            end),
+        }),
+
+        -- Fall back to idle
+        BT.Action(function()
+            npc:ChangeState("Idle")
+            return "Success"
+        end),
+
+    })
+)</code></pre>
+
+    <h2 id="debug">Debug Overlay</h2>
+    <p>Enable visual debug channels to see what the NPC is doing in Studio:</p>
+    <pre><code>-- Individual channels
+npc:EnableDebug("stateBillboard")  -- state label above head
+npc:EnableDebug("fovCone")         -- sight cone arc
+npc:EnableDebug("aggroRadius")     -- hearing range circle
+npc:EnableDebug("pathLine")        -- line to path target
+npc:EnableDebug("steeringMap")     -- 16 steering slot directions
+
+-- Or all at once
+npc:EnableAllDebug()</code></pre>
+
+    <h2 id="destroy">Cleanup</h2>
+    <p>Always call <code>Destroy()</code> when an NPC dies or is removed. This guarantees zero memory leaks:</p>
+    <pre><code>local humanoid = npc._humanoid
+if humanoid then
+    humanoid.Died:Connect(function()
+        task.delay(3, function()
+            npc:Destroy()
+            npc._model:Destroy()
+        end)
+    end)
+end</code></pre>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
+      </div>
+    </div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

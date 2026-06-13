@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Reference — NPCEngine</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">NPCEngine</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="api.html" class="active">API Reference</a>
+      <a href="guide.html">Quick Start</a>
+      <a href="presets.html">Presets</a>
+      <a href="examples.html">Examples</a>
+    </div>
+    <a href="https://github.com/PPeter2/Npc-Engine" class="nav-github" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="api-layout">
+
+  <aside class="api-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Constructor</div>
+      <a href="#engine-new">Engine.new()</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="fsm">State Machine</div>
+      <a href="#register-state">RegisterState</a>
+      <a href="#change-state">ChangeState</a>
+      <a href="#bind-behavior">BindBehavior</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Blackboard</div>
+      <a href="#blackboard-set">BlackboardSet</a>
+      <a href="#blackboard-get">BlackboardGet</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Perception</div>
+      <a href="#configure-perception">ConfigurePerception</a>
+      <a href="#is-aware-of">IsAwareOf</a>
+      <a href="#get-last-known">GetLastKnownPosition</a>
+      <a href="#get-perceived">GetPerceivedTargets</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="aggro">Aggro Table</div>
+      <a href="#add-threat">AddThreat</a>
+      <a href="#remove-threat">RemoveThreat</a>
+      <a href="#taunt">Taunt</a>
+      <a href="#get-aggro">GetAggroTarget</a>
+      <a href="#get-all-threats">GetAllThreats</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="steering">Context Steering</div>
+      <a href="#steer-toward">SteerToward</a>
+      <a href="#steer-stop">SteerStop</a>
+      <a href="#add-danger">AddSteeringDanger</a>
+      <a href="#remove-danger">RemoveSteeringDanger</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="pathfinder">Navigation</div>
+      <a href="#path-to-async">PathToAsync</a>
+      <a href="#stop-movement">StopMovement</a>
+      <a href="#predict-target">PredictTargetPosition</a>
+      <a href="#is-in-los">IsInLineOfSight</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Crowd Control</div>
+      <a href="#apply-cc">ApplyCrowdControl</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="lod">LOD</div>
+      <a href="#set-sleeping">SetSleeping</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="bt">Behaviour Tree</div>
+      <a href="#set-bt">SetBehaviourTree</a>
+      <a href="#tick-bt">TickBehaviourTree</a>
+      <a href="#bt-nodes">BT Node Types</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="anim">Animation</div>
+      <a href="#load-anim">LoadAnimation</a>
+      <a href="#map-state-anim">MapStateToAnimation</a>
+      <a href="#play-override">PlayAnimationOverride</a>
+      <a href="#clear-override">ClearAnimationOverride</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="dialogue">Dialogue</div>
+      <a href="#set-dialogue">SetDialogueScript</a>
+      <a href="#set-dialogue-radius">SetDialogueRadius</a>
+      <a href="#interrupt-dialogue">InterruptDialogue</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Debug</div>
+      <a href="#enable-debug">EnableDebug</a>
+      <a href="#disable-debug">DisableDebug</a>
+      <a href="#enable-all-debug">EnableAllDebug</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Network</div>
+      <a href="#on-state-changed">OnStateChanged</a>
+      <a href="#on-position-sync">OnPositionSync</a>
+      <a href="#on-cc-applied">OnCCApplied</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Destructor</div>
+      <a href="#destroy">Destroy</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="pool">Object Pool</div>
+      <a href="#pool-new">Pool.new()</a>
+      <a href="#spawn-one">SpawnOne</a>
+      <a href="#spawn-wave">SpawnWave</a>
+      <a href="#recycle">Recycle</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title" id="squad">Squad</div>
+      <a href="#squad-new">Squad.new()</a>
+      <a href="#add-member">AddMember</a>
+      <a href="#set-formation">SetFormation</a>
+      <a href="#set-group-state">SetGroupState</a>
+    </div>
+  </aside>
+
+  <main class="api-main">
+
+    <div class="api-header">
+      <h1>API Reference</h1>
+      <p>Complete reference for every public method in NPCEngine. All methods are available on the object returned by <code>Engine.new()</code> unless noted otherwise.</p>
+    </div>
+      <div class="method-header">
+        <div class="method-name">Engine.new()</div>
+        <div class="method-tag">Constructor</div>
+      </div>
+      <p>Creates and returns a new NPC engine instance. Wires together all sub-systems: FSM, Pathfinder, LODBrain, Blackboard, Perception, AggroTable, ContextSteering, Network, AnimationController, DebugOverlay, Dialogue, BehaviourTree, and UtilityAI.</p>
+      <div class="method-sig">
+        <code>NPCEngine.new(config: NPCConfig) → NPCEngineInstance</code>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>Model</code></td><td><code>Model</code></td><td>✓</td><td>The NPC model. Must contain a <code>Humanoid</code> and <code>HumanoidRootPart</code>.</td></tr>
+          <tr><td><code>MoveSpeed</code></td><td><code>number?</code></td><td>—</td><td>Walk speed. Default <code>16</code>.</td></tr>
+          <tr><td><code>SleepRange</code></td><td><code>number?</code></td><td>—</td><td>Distance beyond which the NPC fully sleeps. Default <code>100</code>. Set to <code>9999</code> to never sleep.</td></tr>
+          <tr><td><code>NetworkId</code></td><td><code>string?</code></td><td>—</td><td>Unique identifier for this NPC's network channel. Auto-generated if omitted.</td></tr>
+        </tbody>
+      </table>
+      <pre><code class="language-lua">local npc = NPCEngine.new({
+    Model = workspace.MyNPC,
+    MoveSpeed = 16,
+    SleepRange = 120,
+    NetworkId = "Guard_01",
+})</code></pre>
+    </section>
+    <div class="api-group-title" id="fsm-group">State Machine</div>
+
+    <section class="api-section" id="register-state">
+      <div class="method-header">
+        <div class="method-name">RegisterState()</div>
+        <div class="method-tag">FSM</div>
+      </div>
+      <p>Declares a named state with lifecycle callbacks. Must be called before <code>ChangeState</code> can transition to it.</p>
+      <div class="method-sig"><code>npc:RegisterState(stateName: string, callbacks: StateCallbacks)</code></div>
+      <table class="param-table">
+        <thead><tr><th>Callback</th><th>When it fires</th></tr></thead>
+        <tbody>
+          <tr><td><code>OnEnter</code></td><td>Immediately when the state becomes active.</td></tr>
+          <tr><td><code>OnUpdate</code></td><td>Every LOD brain tick while the state is active.</td></tr>
+          <tr><td><code>OnExit</code></td><td>Before the state is replaced by a new one.</td></tr>
+        </tbody>
+      </table>
+      <pre><code class="language-lua">npc:RegisterState("Chase", {
+    OnEnter = function()
+        print("Chasing!")
+    end,
+    OnUpdate = function()
+        local target = npc:GetAggroTarget()
+        if not target then npc:ChangeState("Idle") end
+    end,
+    OnExit = function()
+        npc:StopMovement()
+    end,
+})</code></pre>
+    </section>
+
+    <section class="api-section" id="change-state">
+      <div class="method-header">
+        <div class="method-name">ChangeState()</div>
+        <div class="method-tag">FSM</div>
+      </div>
+      <p>Transitions to a registered state. Fires the current state's <code>OnExit</code>, atomically cleans up the state's sub-Janitor, then fires the new state's <code>OnEnter</code>. Blocked during active crowd control.</p>
+      <div class="method-sig"><code>npc:ChangeState(stateName: string)</code></div>
+      <div class="notice notice-warn">Throws if <code>stateName</code> has not been registered with <code>RegisterState</code>.</div>
+      <pre><code class="language-lua">npc:ChangeState("Idle")</code></pre>
+    </section>
+
+    <section class="api-section" id="bind-behavior">
+      <div class="method-header">
+        <div class="method-name">BindBehavior()</div>
+        <div class="method-tag">FSM</div>
+      </div>
+      <p>Automatically triggers a state transition when a signal fires. The connection is tracked by the master Janitor and cleaned up on <code>Destroy()</code>.</p>
+      <div class="method-sig"><code>npc:BindBehavior(triggerSignal: Signal, targetState: string)</code></div>
+      <pre><code class="language-lua">-- Transition to Alert whenever the alarm fires
+npc:BindBehavior(AlarmSystem.OnAlarm, "Alert")</code></pre>
+    </section>
+    <div class="api-group-title">Blackboard</div>
+
+    <section class="api-section" id="blackboard-set">
+      <div class="method-header">
+        <div class="method-name">BlackboardSet()</div>
+        <div class="method-tag">Blackboard</div>
+      </div>
+      <p>Stores a value in the NPC's shared context store. Readable by any state, behaviour tree node, or utility AI action on this NPC instance.</p>
+      <div class="method-sig"><code>npc:BlackboardSet(key: string, value: any)</code></div>
+      <pre><code class="language-lua">npc:BlackboardSet("target", somePlayer)
+npc:BlackboardSet("isAggressive", true)
+npc:BlackboardSet("lastDamageTime", os.clock())</code></pre>
+    </section>
+
+    <section class="api-section" id="blackboard-get">
+      <div class="method-header">
+        <div class="method-name">BlackboardGet()</div>
+        <div class="method-tag">Blackboard</div>
+      </div>
+      <p>Reads a value from the blackboard. Returns <code>nil</code> if the key has not been set.</p>
+      <div class="method-sig"><code>npc:BlackboardGet(key: string) → any</code></div>
+      <pre><code class="language-lua">local target = npc:BlackboardGet("target") :: Player?
+if target then
+    print("Current target:", target.Name)
+end</code></pre>
+    </section>
+
+    <div class="api-group-title" id="perception">Perception</div>
+
+    <section class="api-section" id="configure-perception">
+      <div class="method-header">
+        <div class="method-name">ConfigurePerception()</div>
+        <div class="method-tag">Perception</div>
+      </div>
+      <p>Sets ranges and parameters for all three senses. Can be called at any time including after construction to update live values.</p>
+      <div class="method-sig"><code>npc:ConfigurePerception(config: PerceptionConfig)</code></div>
+      <table class="param-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>sightRange</code></td><td><code>number?</code></td><td>60</td><td>Maximum sight distance in studs.</td></tr>
+          <tr><td><code>sightFOV</code></td><td><code>number?</code></td><td>90</td><td>Field of view angle in degrees. Use 360 for full awareness.</td></tr>
+          <tr><td><code>hearingRange</code></td><td><code>number?</code></td><td>30</td><td>Hearing radius. Not blocked by walls unless <code>hearingWalled</code> is true.</td></tr>
+          <tr><td><code>smellRange</code></td><td><code>number?</code></td><td>10</td><td>Smell radius. Never blocked by walls.</td></tr>
+          <tr><td><code>memoryTime</code></td><td><code>number?</code></td><td>8</td><td>Seconds before a detected target is forgotten after leaving range.</td></tr>
+        </tbody>
+      </table>
+      <pre><code class="language-lua">npc:ConfigurePerception({
+    sightRange = 80,
+    sightFOV = 110,
+    hearingRange = 40,
+    smellRange = 8,
+    memoryTime = 10,
+})</code></pre>
+    </section>
+
+    <section class="api-section" id="is-aware-of">
+      <div class="method-header">
+        <div class="method-name">IsAwareOf()</div>
+        <div class="method-tag">Perception</div>
+      </div>
+      <p>Returns true if a player is currently in the NPC's perception memory.</p>
+      <div class="method-sig"><code>npc:IsAwareOf(player: Player) → boolean</code></div>
+      <pre><code class="language-lua">if npc:IsAwareOf(somePlayer) then
+    npc:AddThreat(somePlayer, 50)
+end</code></pre>
+    </section>
+
+    <section class="api-section" id="get-last-known">
+      <div class="method-header">
+        <div class="method-name">GetLastKnownPosition()</div>
+        <div class="method-tag">Perception</div>
+      </div>
+      <p>Returns the last known world position of a player from perception memory. Returns <code>nil</code> if the player has never been detected or memory has expired.</p>
+      <div class="method-sig"><code>npc:GetLastKnownPosition(player: Player) → Vector3?</code></div>
+      <pre><code class="language-lua">local lkp = npc:GetLastKnownPosition(target)
+if lkp then
+    npc:PathToAsync(lkp):catch(function() end)
+end</code></pre>
+    </section>
+
+    <section class="api-section" id="get-perceived">
+      <div class="method-header">
+        <div class="method-name">GetPerceivedTargets()</div>
+        <div class="method-tag">Perception</div>
+      </div>
+      <p>Returns an array of all players currently in perception memory.</p>
+      <div class="method-sig"><code>npc:GetPerceivedTargets() → { Player }</code></div>
+    </section>
+    <div class="api-group-title" id="aggro-group">Aggro Table</div>
+
+    <section class="api-section" id="add-threat">
+      <div class="method-header">
+        <div class="method-name">AddThreat()</div>
+        <div class="method-tag">Aggro</div>
+      </div>
+      <p>Adds threat to a player in the aggro table. If the player is not already in the table they are added. Threat decays over time when the player leaves aggro range.</p>
+      <div class="method-sig"><code>npc:AddThreat(target: Player, amount: number)</code></div>
+      <pre><code class="language-lua">-- Add 100 threat when player hits the NPC
+npc:AddThreat(attackingPlayer, 100)</code></pre>
+    </section>
+
+    <section class="api-section" id="remove-threat">
+      <div class="method-header">
+        <div class="method-name">RemoveThreat()</div>
+        <div class="method-tag">Aggro</div>
+      </div>
+      <p>Removes a player from the aggro table entirely.</p>
+      <div class="method-sig"><code>npc:RemoveThreat(target: Player)</code></div>
+    </section>
+
+    <section class="api-section" id="taunt">
+      <div class="method-header">
+        <div class="method-name">Taunt()</div>
+        <div class="method-tag">Aggro</div>
+      </div>
+      <p>Forces the NPC to target a specific player for a duration, regardless of threat levels. The taunted player becomes the priority target and threat decay is blocked during the taunt window.</p>
+      <div class="method-sig"><code>npc:Taunt(target: Player, duration: number)</code></div>
+      <pre><code class="language-lua">-- Tank ability: force boss to target me for 5 seconds
+npc:Taunt(tankPlayer, 5)</code></pre>
+    </section>
+
+    <section class="api-section" id="get-aggro">
+      <div class="method-header">
+        <div class="method-name">GetAggroTarget()</div>
+        <div class="method-tag">Aggro</div>
+      </div>
+      <p>Returns the current highest-threat player, or <code>nil</code> if the aggro table is empty.</p>
+      <div class="method-sig"><code>npc:GetAggroTarget() → Player?</code></div>
+    </section>
+    <div class="api-group-title" id="steering-group">Context Steering</div>
+
+    <section class="api-section" id="steer-toward">
+      <div class="method-header">
+        <div class="method-name">SteerToward()</div>
+        <div class="method-tag">Steering</div>
+      </div>
+      <p>Activates context steering toward a target position. Uses 16-slot interest and danger maps. Raycasts are halved per tick via alternating slot cache for performance. Use for close-range movement where smooth avoidance matters more than path accuracy.</p>
+      <div class="method-sig"><code>npc:SteerToward(targetPosition: Vector3)</code></div>
+      <pre><code class="language-lua">-- Use steering when close, pathfinding when far
+local dist = (root.Position - myRoot.Position).Magnitude
+if dist < 15 then
+    npc:SteerToward(root.Position)
+else
+    npc:PathToAsync(root.Position):catch(function() end)
+end</code></pre>
+    </section>
+
+    <section class="api-section" id="steer-stop">
+      <div class="method-header">
+        <div class="method-name">SteerStop()</div>
+        <div class="method-tag">Steering</div>
+      </div>
+      <p>Clears the steering interest target and stops steering movement.</p>
+      <div class="method-sig"><code>npc:SteerStop()</code></div>
+    </section>
+
+    <section class="api-section" id="add-danger">
+      <div class="method-header">
+        <div class="method-name">AddSteeringDanger()</div>
+        <div class="method-tag">Steering</div>
+      </div>
+      <p>Registers a dynamic danger source that the steering system will avoid. Weight 0–1 controls how strongly the source repels movement.</p>
+      <div class="method-sig"><code>npc:AddSteeringDanger(part: BasePart, weight: number)</code></div>
+      <pre><code class="language-lua">-- Make NPCs avoid each other
+for _, otherNPC in allNPCs do
+    npc:AddSteeringDanger(otherNPC._rootPart, 0.8)
+end</code></pre>
+    </section>
+    <div class="api-group-title" id="nav-group">Navigation</div>
+
+    <section class="api-section" id="path-to-async">
+      <div class="method-header">
+        <div class="method-name">PathToAsync()</div>
+        <div class="method-tag">Navigation</div>
+      </div>
+      <p>Computes and executes a path to a world position. Returns a cancellable Promise. Handles jump waypoints, stuck detection with automatic recompute, and StreamingEnabled safety.</p>
+      <div class="method-sig"><code>npc:PathToAsync(targetPosition: Vector3) → Promise</code></div>
+      <div class="notice notice-info">If the target hasn't moved more than 4 studs from the last computed destination, the existing promise is returned instead of recomputing.</div>
+      <pre><code class="language-lua">npc:PathToAsync(targetPosition)
+    :andThen(function()
+        print("Arrived!")
+    end)
+    :catch(function(err)
+        warn("Path failed:", err)
+    end)</code></pre>
+    </section>
+
+    <section class="api-section" id="stop-movement">
+      <div class="method-header">
+        <div class="method-name">StopMovement()</div>
+        <div class="method-tag">Navigation</div>
+      </div>
+      <p>Immediately cancels the active navigation promise and stops the humanoid. No physics stutter.</p>
+      <div class="method-sig"><code>npc:StopMovement()</code></div>
+    </section>
+
+    <section class="api-section" id="predict-target">
+      <div class="method-header">
+        <div class="method-name">PredictTargetPosition()</div>
+        <div class="method-tag">Navigation</div>
+      </div>
+      <p>Returns where a moving BasePart will be in <code>leadTime</code> seconds based on its current linear velocity.</p>
+      <div class="method-sig"><code>npc:PredictTargetPosition(targetPart: BasePart, leadTime: number) → Vector3</code></div>
+      <pre><code class="language-lua">-- Path to where the player will be in 0.3 seconds
+local predicted = npc:PredictTargetPosition(playerRoot, 0.3)
+npc:PathToAsync(predicted):catch(function() end)</code></pre>
+    </section>
+
+    <section class="api-section" id="is-in-los">
+      <div class="method-header">
+        <div class="method-name">IsInLineOfSight()</div>
+        <div class="method-tag">Navigation</div>
+      </div>
+      <p>Returns true if a BasePart is within the NPC's FOV angle and has a clear raycast path.</p>
+      <div class="method-sig"><code>npc:IsInLineOfSight(targetPart: BasePart, fovAngle: number, maxDistance: number) → boolean</code></div>
+    </section>
+
+    <section class="api-section" id="apply-cc">
+      <div class="method-header">
+        <div class="method-name">ApplyCrowdControl()</div>
+        <div class="method-tag">CC</div>
+      </div>
+      <p>Forcefully interrupts AI execution and applies a physical effect for a duration. Restores the previous state when expired. All four CC types clean up via Janitor — zero residual effects.</p>
+      <div class="method-sig"><code>npc:ApplyCrowdControl(ccType: CrowdControlType, duration: number, knockbackDir: Vector3?)</code></div>
+      <table class="param-table">
+        <thead><tr><th>CC Type</th><th>Physical effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>"Stun"</code></td><td>Anchors HumanoidRootPart, disables Running state.</td></tr>
+          <tr><td><code>"Freeze"</code></td><td>Anchors root, disables all toggleable Humanoid states.</td></tr>
+          <tr><td><code>"Knockback"</code></td><td>Applies physics impulse in <code>knockbackDir</code> direction.</td></tr>
+          <tr><td><code>"Root"</code></td><td>Pins position via BodyPosition constraint without anchoring.</td></tr>
+        </tbody>
+      </table>
+      <pre><code class="language-lua">npc:ApplyCrowdControl("Stun", 2)
+npc:ApplyCrowdControl("Knockback", 1, Vector3.new(0, 1, -1))</code></pre>
+    </section>
+    <div class="api-group-title" id="lod-group">LOD Brain</div>
+
+    <section class="api-section" id="set-sleeping">
+      <div class="method-header">
+        <div class="method-name">SetSleeping()</div>
+        <div class="method-tag">LOD</div>
+      </div>
+      <p>Manually overrides LOD sleep state. When sleeping, all AI ticks pause and the Humanoid Running state is disabled. The LOD brain auto-sleeps NPCs beyond <code>SleepRange</code> and wakes them when players approach.</p>
+      <div class="method-sig"><code>npc:SetSleeping(sleepState: boolean)</code></div>
+      <pre><code class="language-lua">-- Force sleep during a cutscene
+npc:SetSleeping(true)
+-- Resume after cutscene
+npc:SetSleeping(false)</code></pre>
+    </section>
+    <div class="api-group-title" id="bt-group">Behaviour Tree</div>
+
+    <section class="api-section" id="set-bt">
+      <div class="method-header">
+        <div class="method-name">SetBehaviourTree()</div>
+        <div class="method-tag">BT</div>
+      </div>
+      <p>Sets the root node of the behaviour tree. The tree is ticked by LODBrain automatically at the NPC's current LOD rate.</p>
+      <div class="method-sig"><code>npc:SetBehaviourTree(rootNode: BTNode)</code></div>
+      <pre><code class="language-lua">local BT = NPCEngine.BT
+
+npc:SetBehaviourTree(
+    BT.Selector({
+        BT.Sequence({
+            BT.Condition(function() return npc:GetAggroTarget() ~= nil end),
+            BT.Action(function()
+                npc:ChangeState("Chase")
+                return "Running"
+            end),
+        }),
+        BT.Action(function()
+            npc:ChangeState("Idle")
+            return "Success"
+        end),
+    })
+)</code></pre>
+    </section>
+
+    <section class="api-section" id="bt-nodes">
+      <div class="method-header">
+        <div class="method-name">BT Node Types</div>
+        <div class="method-tag">BT</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Constructor</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>BT.Sequence(children)</code></td><td>Runs children left to right. Stops on first Failure. Returns Success only if all succeed.</td></tr>
+          <tr><td><code>BT.Selector(children)</code></td><td>Runs children left to right. Stops on first Success. Returns Failure if all fail.</td></tr>
+          <tr><td><code>BT.Parallel(children, policy)</code></td><td>Runs all children. Policy <code>"all"</code>: Success if all succeed. Policy <code>"any"</code>: Success if any succeed.</td></tr>
+          <tr><td><code>BT.Condition(fn)</code></td><td>Returns Success if <code>fn()</code> returns true, Failure otherwise.</td></tr>
+          <tr><td><code>BT.Action(fn)</code></td><td>Runs <code>fn()</code> which must return <code>"Success"</code>, <code>"Failure"</code>, or <code>"Running"</code>.</td></tr>
+          <tr><td><code>BT.Inverter(child)</code></td><td>Flips Success ↔ Failure from its child.</td></tr>
+          <tr><td><code>BT.Succeeder(child)</code></td><td>Always returns Success regardless of child result.</td></tr>
+          <tr><td><code>BT.Decorator(child, fn)</code></td><td>Wraps a child and transforms its result via a custom function.</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <div class="api-group-title" id="anim-group">Animation</div>
+
+    <section class="api-section" id="load-anim">
+      <div class="method-header">
+        <div class="method-name">LoadAnimation()</div>
+        <div class="method-tag">Animation</div>
+      </div>
+      <p>Loads an AnimationTrack into the named slot. Built-in slots are <code>"idle"</code>, <code>"walk"</code>, <code>"run"</code>, <code>"attack"</code>, <code>"stun"</code>, <code>"death"</code>. Custom slot names are supported.</p>
+      <div class="method-sig"><code>npc:LoadAnimation(slotName: string, animId: string, priority: Enum.AnimationPriority?)</code></div>
+      <pre><code class="language-lua">-- R15 default animations
+npc:LoadAnimation("idle",   "rbxassetid://507766666")
+npc:LoadAnimation("walk",   "rbxassetid://507777826")
+npc:LoadAnimation("run",    "rbxassetid://507767714")
+npc:LoadAnimation("attack", "rbxassetid://YOUR_ATTACK_ID",
+    Enum.AnimationPriority.Action)</code></pre>
+    </section>
+
+    <section class="api-section" id="map-state-anim">
+      <div class="method-header">
+        <div class="method-name">MapStateToAnimation()</div>
+        <div class="method-tag">Animation</div>
+      </div>
+      <p>Maps an FSM state name to an animation slot. When the NPC enters that state, the mapped animation plays automatically.</p>
+      <div class="method-sig"><code>npc:MapStateToAnimation(stateName: string, slotName: string)</code></div>
+      <pre><code class="language-lua">npc:MapStateToAnimation("Idle",   "idle")
+npc:MapStateToAnimation("Chase",  "run")
+npc:MapStateToAnimation("Attack", "attack")</code></pre>
+    </section>
+
+    <section class="api-section" id="play-override">
+      <div class="method-header">
+        <div class="method-name">PlayAnimationOverride()</div>
+        <div class="method-tag">Animation</div>
+      </div>
+      <p>Forces a specific animation slot regardless of current state or speed. Used for CC animations (stun, freeze) or special events. Call <code>ClearAnimationOverride()</code> to resume normal blending.</p>
+      <div class="method-sig"><code>npc:PlayAnimationOverride(slotName: string)</code></div>
+    </section>
+    <section class="api-section" id="set-dialogue">
+      <div class="method-header">
+        <div class="method-name">SetDialogueScript()</div>
+        <div class="method-tag">Dialogue</div>
+      </div>
+      <p>Sets the NPC's dialogue script and activates the proximity zone. When a player enters the zone the script runs automatically.</p>
+      <div class="method-sig"><code>npc:SetDialogueScript(script: DialogueScript)</code></div>
+      <pre><code class="language-lua">npc:SetDialogueScript({
+    { speaker = "Guard", text = "Halt! Who goes there?",  duration = 3 },
+    { speaker = "Guard", text = "State your business.",   duration = 3 },
+    { speaker = "Guard", text = "Very well. Move along.", duration = 2 },
+})
+
+npc:OnLineSpoken(function(line, index)
+    -- Display in your UI here
+    print(line.speaker .. ": " .. line.text)
+end)</code></pre>
+    </section>
+    <div class="api-group-title">Debug Overlay</div>
+
+    <section class="api-section" id="enable-debug">
+      <div class="method-header">
+        <div class="method-name">EnableDebug()</div>
+        <div class="method-tag">Debug</div>
+      </div>
+      <p>Enables a debug visualization channel. All channels auto-clean on <code>Destroy()</code>.</p>
+      <div class="method-sig"><code>npc:EnableDebug(channel: string)</code></div>
+      <table class="param-table">
+        <thead><tr><th>Channel</th><th>What it draws</th></tr></thead>
+        <tbody>
+          <tr><td><code>"stateBillboard"</code></td><td>Current FSM state above the NPC's head.</td></tr>
+          <tr><td><code>"pathLine"</code></td><td>Line from NPC to current path target.</td></tr>
+          <tr><td><code>"fovCone"</code></td><td>Sight FOV arc in the XZ plane.</td></tr>
+          <tr><td><code>"aggroRadius"</code></td><td>Circle showing hearing range.</td></tr>
+          <tr><td><code>"spatialCell"</code></td><td>Current spatial grid cell outline.</td></tr>
+          <tr><td><code>"steeringMap"</code></td><td>16 context steering slot directions with colour coding.</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <div class="api-group-title">Destructor</div>
+
+    <section class="api-section" id="destroy">
+      <div class="method-header">
+        <div class="method-name">Destroy()</div>
+        <div class="method-tag">Lifecycle</div>
+      </div>
+      <p>The final destructor. Atomically fires the current state's <code>OnExit</code>, stops all movement, interrupts dialogue, disconnects all network channels, fires the EventBus <code>npc.destroyed</code> event, and calls <code>Janitor:Destroy()</code> to guarantee absolute zero memory leaks.</p>
+      <div class="method-sig"><code>npc:Destroy()</code></div>
+      <div class="notice notice-warn">After calling <code>Destroy()</code> the NPC instance is no longer valid. Do not call any methods on it.</div>
+      <pre><code class="language-lua">-- On NPC death
+humanoid.Died:Connect(function()
+    task.delay(3, function()
+        npc:Destroy()
+        model:Destroy()
+    end)
+end)</code></pre>
+    </section>
+    <div class="api-group-title" id="pool-group">Object Pool</div>
+
+    <section class="api-section" id="pool-new">
+      <div class="method-header">
+        <div class="method-name">Pool.new()</div>
+        <div class="method-tag">Pool</div>
+      </div>
+      <p>Creates a pre-warmed pool of NPC instances. Allocation is deferred across frames via <code>task.defer</code> to avoid spawn spikes.</p>
+      <div class="method-sig"><code>NPCEngine.Pool.new(config: PoolConfig) → ObjectPool</code></div>
+      <pre><code class="language-lua">local pool = NPCEngine.Pool.new({
+    template = workspace.EnemyTemplate,
+    poolSize = 20,
+    parent = workspace,
+    onSpawn = function(npc, model)
+        npc:RegisterState("Patrol", { ... })
+        npc:ChangeState("Patrol")
+    end,
+    moveSpeed  = 14,
+    sleepRange = 120,
+})</code></pre>
+    </section>
+
+    <section class="api-section" id="spawn-wave">
+      <div class="method-header">
+        <div class="method-name">SpawnWave()</div>
+        <div class="method-tag">Pool</div>
+      </div>
+      <p>Spawns multiple NPCs across spawn points, one per frame. Optional <code>delayBetween</code> adds extra spacing between spawns.</p>
+      <div class="method-sig"><code>pool:SpawnWave(spawnPoints: { CFrame }, count: number?, delayBetween: number?)</code></div>
+      <pre><code class="language-lua">pool:SpawnWave({
+    CFrame.new(10, 5, 10),
+    CFrame.new(-10, 5, 10),
+    CFrame.new(0, 5, 20),
+}, 15, 0.3)  -- 15 NPCs, 0.3s between each</code></pre>
+    </section>
+
+    <section class="api-section" id="recycle">
+      <div class="method-header">
+        <div class="method-name">Recycle()</div>
+        <div class="method-tag">Pool</div>
+      </div>
+      <p>Returns an NPC to the pool. Resets health, stops movement, clears blackboard, and moves the model off-world. The entry becomes available for the next <code>SpawnOne</code> or <code>SpawnWave</code> call.</p>
+      <div class="method-sig"><code>pool:Recycle(npc: NPCEngineInstance)</code></div>
+    </section>
+    <div class="api-group-title" id="squad-group">Squad System</div>
+
+    <section class="api-section" id="squad-new">
+      <div class="method-header">
+        <div class="method-name">Squad.new()</div>
+        <div class="method-tag">Squad</div>
+      </div>
+      <p>Creates a squad that manages multiple NPCs with a shared blackboard, formation movement, and group state transitions.</p>
+      <div class="method-sig"><code>NPCEngine.Squad.new(config: SquadConfig, masterJanitor: any) → GroupAI</code></div>
+      <pre><code class="language-lua">local Janitor = require(Packages.Janitor)
+local janitor = Janitor.new()
+
+local squad = NPCEngine.Squad.new({
+    name = "Alpha",
+    formation = "wedge",
+    leaderPolicy = "healthiest",
+}, janitor)
+
+squad:AddMember(npc1)
+squad:AddMember(npc2)
+squad:AddMember(npc3)
+
+squad:SetGroupState("Chase")
+squad:SetShared("target", somePlayer)</code></pre>
+    </section>
+
+    <section class="api-section" id="set-formation">
+      <div class="method-header">
+        <div class="method-name">SetFormation()</div>
+        <div class="method-tag">Squad</div>
+      </div>
+      <p>Changes the squad's movement formation. Call <code>TickFormation()</code> every heartbeat to apply positions to followers.</p>
+      <div class="method-sig"><code>squad:SetFormation(formationName: string)</code></div>
+      <table class="param-table">
+        <thead><tr><th>Formation</th><th>Shape</th></tr></thead>
+        <tbody>
+          <tr><td><code>"line"</code></td><td>Followers trail directly behind leader.</td></tr>
+          <tr><td><code>"wedge"</code></td><td>V-shape behind leader.</td></tr>
+          <tr><td><code>"flanks"</code></td><td>Two columns either side of leader.</td></tr>
+          <tr><td><code>"circle"</code></td><td>Followers surround a central point.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">NPCEngine</div>
+        <div class="footer-tagline">Enterprise-grade NPC framework for Roblox</div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <div class="footer-col-title">Docs</div>
+          <a href="guide.html">Quick Start</a>
+          <a href="api.html">API Reference</a>
+          <a href="presets.html">Presets</a>
+          <a href="examples.html">Examples</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">Built with Luau · Powered by Wally · © 2026 NPCEngine</div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
